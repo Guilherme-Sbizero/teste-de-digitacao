@@ -1,85 +1,80 @@
-const texto = document.querySelector("#texto");
-const entrada = document.querySelector("#entrada");
-const reiniciar = document.querySelector("#reiniciar");
-const resultado = document.querySelector("#resultado");
-const historico = document.querySelector("#historico");
-const alterarTemaBtn = document.querySelector("#alterarTema");
+//seleção de elementos
 
-const textos = [
-    "Ser ou não ser, eis a questão",
-    "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
-    "Esse, saepe veniam.",
-    "Dolorum laudantium voluptatem commodi voluptatum voluptate distinctio praesentium quod.",
-    " Deserunt dolor illo eligendi totam dolores amet consequuntur fugiat deleniti.",
-    "Exemplo de Texto para digitar",
-    "Outro exemplo de texto para digitar",
-    "Mais um exemplo de texto para digitar",
-    "Digite isso",
-    "Você pode digitar isso aqui?",
-    "Se você está digitando essa frase, muito obrigado por visitar meu projeto!",
-];
+const text = document.querySelector("#text")
+const input = document.querySelector("#input")
+const restart = document.querySelector("#restart")
+const result = document.querySelector("#result")
+const historic = document.querySelector("#historic")
 
-function novoTexto () {
-    const index = Math.floor(Math.random() * textos.length)
-    texto.textContent = textos[index]
+
+// textos
+
+const texts = [
+    "O número dos que nos invejam confirma as nossas capacidades.",
+    "A vida é muito importante para ser levada a sério.",
+    "É melhor conquistar a si mesmo do que vencer mil batalhas.",
+    "Ser feliz sem motivo é a mais autêntica forma de felicidade.",
+    "A alegria de fazer o bem é a única felicidade verdadeira."
+]
+
+// funcões
+
+function newText() {
+    const index = Math.floor(Math.random() * texts.length)
+    text.textContent = texts[index]
 }
 
-function atualizarTeste () {
-    iniciar();
+function updateText() {
+    start()
 
-    if(entrada.value === texto.textContent) {
-        verificar()
+    if(input.value === text.textContent){
+        verify()
     }
 }
 
-function iniciar() {
-    const statusDoTeste = JSON.parse(localStorage.getItem("testeEmAndamento"))  //True
+function start() {
+    const testStatus = JSON.parse(localStorage.getItem("testProgress"))
 
-    if(!statusDoTeste) {
-    localStorage.setItem("tempoInicial", new Date().getTime())
-    localStorage.setItem("testeEmAndamento", true)
-    }
+    if (!testStatus){
+        localStorage.setItem("startTime", new Date().getTime())
+        localStorage.setItem("testProgress", true)
+    }   
 }
 
-function verificar() {
-    const tempoFinal = new Date().getTime()
-    const tempoInicial = parseInt(localStorage.getItem("tempoInicial"))
-    const tempogasto = (tempoFinal - tempoInicial) / 10000;
+function verify() {
+    const finalTime = new Date().getTime()
+    const startTime = parseInt(localStorage.getItem("startTime"))
+    const timeSpent = (finalTime - startTime) / 1000
 
-    resultado.textContent = `Parabéns! Você levou ${tempogasto} segundos!`
+    result.textContent = `Parabéns! Você levou ${timeSpent.toFixed(2)} segundos`
 
-    adicionarAoHistorico(texto.textContent, tempogasto)
+    addToHistory(text.textContent, timeSpent)
 
-    localStorage.setItem("testeEmAndamento", false)
-    entrada.value = ""
-    novoTexto()
+    localStorage.setItem("testProgress", false)
+    input.value = ""
+    newText()
 }
 
-function adicionarAoHistorico(textoDigitado, tempogasto) {
-    const itemHistorico = document.createElement("p")
+function addToHistory(typedText, timeSpent) {
+    const itemHistory = document.createElement("p")
+    itemHistory.textContent = `Texto: "${typedText}" - Tempo: ${timeSpent.toFixed(2)} segundos.`
 
-    itemHistorico.textContent = `TEXTO: ${textoDigitado} " - TEMPO: ${tempogasto} "em Segundos!"`
-
-    historico.appendChild(itemHistorico);
+    historic.appendChild(itemHistory)
 }
 
-function alterarnarTema() {
-    const body = document.body
-
-    body.classList.toggle("claro")
-    body.classList.toggle("escuro")
+function restartTest() {
+    input.value = ""
+    result.textContent = ""
+    newText()
+    localStorage.setItem("testProgress", false)
+    historic.innerHTML = ""
 }
 
-function reinicarTeste() {
-    entrada.value = ""
-    resultado.textContent = ""
-    novoTexto()
-    localStorage.setItem("testeEmAndamento", false)
-    historico.innerHTML = ""
-}
+//eventos
 
-entrada.addEventListener("keyup", atualizarTeste);
-reiniciar.addEventListener("click", reinicarTeste);
-alterarnarTema.addEventListener("click", alterarnarTema)
+input.addEventListener("keyup", updateText)
+restart.addEventListener("click", restartTest)
 
-novoTexto()
+//iniciar
+
+newText()
